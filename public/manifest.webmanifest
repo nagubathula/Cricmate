@@ -1,0 +1,11 @@
+{
+  "name": "CricMate",
+  "short_name": "CricMate",
+  "description": "Timing-based cricket duels — offline vs CPU, LAN, P2P or online.",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d1a12",
+  "theme_color": "#14532d",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

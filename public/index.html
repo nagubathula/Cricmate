@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#14532d" />
+    <title>CricMate — cricket duels</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- MENU -->
+    <section id="menu" class="screen active">
+      <div class="menu-wrap">
+        <h1><span class="logo">🏏</span> CricMate</h1>
+        <p class="tag">Read the ball. Time the shot. Beat your mate.</p>
+
+        <label class="field">Your name <input id="name" maxlength="16" autocomplete="nickname" placeholder="Player" /></label>
+
+        <div class="card">
+          <h2>Choose your cricketer</h2>
+          <div id="roster" class="roster"></div>
+          <div id="char-detail" class="char-detail"></div>
+        </div>
+
+        <div class="card">
+          <h2>Match settings</h2>
+          <div class="grid4">
+            <label class="field">Overs
+              <select id="opt-overs"><option>1</option><option selected>2</option><option>3</option><option>5</option><option>10</option></select>
+            </label>
+            <label class="field">Wickets
+              <select id="opt-wickets"><option>1</option><option>2</option><option selected>3</option><option>5</option><option>10</option></select>
+            </label>
+            <label class="field">Who bats first
+              <select id="opt-toss"><option value="toss" selected>Coin toss</option><option value="host">Me</option><option value="guest">Opponent</option></select>
+            </label>
+            <label class="field">Graphics
+              <select id="opt-gfx"><option value="3d" selected>3D</option><option value="2d">2D (light)</option></select>
+            </label>
+          </div>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <h2>Offline vs CPU</h2>
+            <p class="muted">No network needed.</p>
+            <label class="field">Difficulty
+              <select id="opt-diff"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select>
+            </label>
+            <button id="btn-ai" class="primary">Play vs CPU</button>
+          </div>
+
+          <div class="card">
+            <h2>Multiplayer</h2>
+            <p class="muted">LAN, P2P or online via ngrok.</p>
+            <button id="btn-host" class="primary">Host a match</button>
+            <div class="join-row">
+              <input id="join-code" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off" />
+              <button id="btn-join">Join</button>
+            </div>
+            <p id="net-status" class="status"></p>
+          </div>
+        </div>
+
+        <details class="card howto">
+          <summary>How to play</summary>
+          <p><b>Bowling:</b> pick a delivery type and a line, then hit <b>Bowl</b>. Mix it up — slower balls fool early swingers, yorkers are hard to attack, bouncers punish drives.</p>
+          <p><b>Batting:</b> watch the ball and press a shot key as it reaches the glowing zone at your crease. The key you press is both your <i>shot</i> and your <i>timing</i>.</p>
+          <table class="keys">
+            <tr><td><kbd>←</kbd>/<kbd>A</kbd></td><td>Pull — leg side; great vs leg-line & bouncers</td></tr>
+            <tr><td><kbd>↑</kbd>/<kbd>W</kbd></td><td>Drive — straight / off; great vs full balls</td></tr>
+            <tr><td><kbd>→</kbd>/<kbd>D</kbd></td><td>Cut — off side; for balls outside off</td></tr>
+            <tr><td><kbd>Space</kbd></td><td>Loft — sixes or caught! Best vs spin & slower balls</td></tr>
+            <tr><td><kbd>↓</kbd>/<kbd>S</kbd></td><td>Block — safe, few runs</td></tr>
+          </table>
+          <p>Don't press anything to leave the ball — but leave a straight one and you may lose your stumps.</p>
+          <p><b>Bowling keys:</b> <kbd>1</kbd>–<kbd>6</kbd> delivery, <kbd>Z</kbd>/<kbd>X</kbd>/<kbd>C</kbd> line (leg/middle/off), <kbd>Enter</kbd> bowl.</p>
+        </details>
+        <p class="foot"><button id="btn-mute" class="link"></button> · <span id="offline-badge"></span></p>
+      </div>
+    </section>
+
+    <!-- LOBBY -->
+    <section id="lobby" class="screen">
+      <div class="menu-wrap">
+        <h2>Room</h2>
+        <div class="room-code" id="lobby-code">----</div>
+        <div id="lobby-host-info">
+          <p class="muted">Share the code, or send a friend one of these links:</p>
+          <ul id="lobby-links" class="links"></ul>
+        </div>
+        <p id="lobby-status" class="status"></p>
+        <p class="muted small">Connection: <span id="lobby-transport" class="badge">relay</span></p>
+        <div class="row">
+          <button id="btn-start" class="primary" disabled>Start match</button>
+          <button id="btn-leave-lobby">Leave</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="game" class="screen">
+      <header id="scoreboard">
+        <div class="teams">
+          <div class="team" id="team-0"><span class="dot t0"></span><span class="tname"></span><span class="tchar"></span><span class="tscore"></span></div>
+          <div class="team" id="team-1"><span class="dot t1"></span><span class="tname"></span><span class="tchar"></span><span class="tscore"></span></div>
+        </div>
+        <div class="meta">
+          <div id="equation"></div>
+          <div id="this-over" class="over-balls"></div>
+        </div>
+        <div class="hdr-btns">
+          <span id="game-transport" class="badge"></span>
+          <button id="btn-quit" class="icon" title="Quit">✕</button>
+        </div>
+      </header>
+
+      <div id="stage">
+        <canvas id="canvas"></canvas>
+        <div id="timing" class="timing"></div>
+      </div>
+
+      <footer id="controls">
+        <div id="commentary"></div>
+
+        <div id="panel-bowl" class="panel">
+          <div class="choices" id="choose-type"></div>
+          <div class="choices lines" id="choose-line"></div>
+          <button id="btn-bowl" class="primary big">Bowl ▶</button>
+        </div>
+
+        <div id="panel-bat" class="panel">
+          <div class="shots" id="shot-pad"></div>
+        </div>
+
+        <div id="panel-wait" class="panel">
+          <p id="wait-text"></p>
+        </div>
+      </footer>
+    </section>
+
+    <!-- RESULT / DIALOG -->
+    <div id="modal" class="modal" hidden>
+      <div class="modal-card">
+        <h2 id="modal-title"></h2>
+        <div id="modal-body"></div>
+        <div class="row" id="modal-actions"></div>
+      </div>
+    </div>
+
+    <script type="importmap">{ "imports": { "three": "./vendor/three.module.js" } }</script>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

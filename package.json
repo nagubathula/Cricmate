@@ -1,0 +1,25 @@
+{
+  "name": "cricmate",
+  "version": "1.0.0",
+  "description": "Timing-based cricket duels: offline vs AI, LAN, P2P (WebRTC) and online via ngrok + WebSockets",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "online": "node server.js --ngrok",
+    "test": "node --test test/*.test.js",
+    "postinstall": "node scripts/vendor.js",
+    "vendor": "node scripts/vendor.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.187.0",
+    "ws": "^8.23.0"
+  },
+  "optionalDependencies": {
+    "@ngrok/ngrok": "^1.8.0"
+  }
+}
